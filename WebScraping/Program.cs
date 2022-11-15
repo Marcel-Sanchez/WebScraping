@@ -11,7 +11,16 @@ using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium.Chrome;
 using System.Threading.Tasks;
 using OpenQA.Selenium.Interactions;
-using WebScraping;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Xml.Linq;
+using Newtonsoft.Json;
+using System.Numerics;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace MyApp
 {
@@ -32,6 +41,12 @@ namespace MyApp
 
             accept.Submit();
 
+            var items = driver.FindElements(By.ClassName(Setting.ClassName)).Where(p => !p.Text.StartsWith("Los antecedentes") 
+                                                                                     && !p.Text.StartsWith("El contribuyente")
+                                                                                     && !p.Text.StartsWith("A través de esta"));
+
+            string json = JsonSerializer.Serialize(items);
+            File.WriteAllText(@"D:\path.json", json);
         }
     }
 }

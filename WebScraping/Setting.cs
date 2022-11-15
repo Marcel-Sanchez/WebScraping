@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebScraping
+namespace MyApp
 {
     internal class Setting
     {
@@ -16,5 +16,7 @@ namespace WebScraping
 
         public static string Rut1Value = "76749144";
         public static string Rut2Value = "1";
+
+        public static string ClassName = "texto";
     }
 }

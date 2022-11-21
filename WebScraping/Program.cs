@@ -21,6 +21,7 @@ using System.Xml.Linq;
 using Newtonsoft.Json;
 using System.Numerics;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using System.Dynamic;
 
 namespace MyApp
 {
@@ -41,11 +42,34 @@ namespace MyApp
 
             accept.Submit();
 
-            var items = driver.FindElements(By.ClassName(Setting.ClassName)).Where(p => !p.Text.StartsWith("Los antecedentes") 
+            var items = driver.FindElements(By.ClassName(Setting.ClassName)).Where(p => !p.Text.StartsWith("Los antecedentes")
                                                                                      && !p.Text.StartsWith("El contribuyente")
-                                                                                     && !p.Text.StartsWith("A través de esta"));
+                                                                                     && !p.Text.StartsWith("A través de esta")
+                                                                                     && p.Text != "");
 
-            string json = JsonSerializer.Serialize(items);
+            IDictionary<string, object> expando = new ExpandoObject();
+            var textArray = items.Select(p => p.Text).ToArray();
+
+            for (int i = 0; i <= 8; i += 2)
+            {
+                expando[textArray[i]] = textArray[i + 1];
+            }
+
+            var docs = new List<IDictionary<string, object>>();
+            for (int i = 14; i < textArray.Length; i += 4)
+            {
+                IDictionary<string, object> expandoTemp = new ExpandoObject();
+                Console.WriteLine(textArray[i]);
+                expandoTemp["Codigo"] = textArray[i];
+                expandoTemp["Descripcion"] = textArray[i + 1];
+                expandoTemp["Autorizado"] = textArray[i + 2];
+                expandoTemp["Desautorizado"] = textArray[i + 3];
+                docs.Add(expandoTemp);
+            }
+
+            expando["documentos"] = docs;
+
+            string json = JsonSerializer.Serialize(expando);
             File.WriteAllText(@"D:\path.json", json);
         }
     }

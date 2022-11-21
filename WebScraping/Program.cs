@@ -22,6 +22,7 @@ using Newtonsoft.Json;
 using System.Numerics;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using System.Dynamic;
+using System.Text.RegularExpressions;
 
 namespace MyApp
 {
@@ -49,11 +50,13 @@ namespace MyApp
 
             IDictionary<string, object> expando = new ExpandoObject();
             var textArray = items.Select(p => p.Text).ToArray();
+            textArray = textArray.Select(p => Regex.Replace(p.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", "")).ToArray();
 
             for (int i = 0; i <= 8; i += 2)
             {
                 expando[textArray[i]] = textArray[i + 1];
             }
+
 
             var docs = new List<IDictionary<string, object>>();
             for (int i = 14; i < textArray.Length; i += 4)
